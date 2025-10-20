@@ -168,16 +168,48 @@ const mergeStatus = document.getElementById('mergeStatus');
 
 let filesToMerge = [];
 
-mergeInput.addEventListener('change', (e) => {
-    filesToMerge = Array.from(e.target.files);
-
-    if (filesToMerge.length > 0) {
-        mergeFiles.innerHTML = '<h4>Files to merge:</h4>' +
-            filesToMerge.map((f, i) => `<div class="file-item">${i + 1}. ${f.name}</div>`).join('');
-        mergeBtn.classList.remove('hidden');
-        mergeStatus.textContent = `${filesToMerge.length} file(s) selected`;
-        mergeStatus.className = 'status info';
+function updateMergeFileList() {
+    if (filesToMerge.length === 0) {
+        mergeFiles.innerHTML = '';
+        mergeBtn.classList.add('hidden');
+        mergeStatus.textContent = '';
+        return;
     }
+
+    mergeFiles.innerHTML = '<h4>Files to merge:</h4>' +
+        filesToMerge.map((f, i) => `
+            <div class="file-item">
+                <span class="file-number">${i + 1}.</span>
+                <span class="file-name">${f.name}</span>
+                <button class="delete-btn" data-index="${i}" title="Remove file">×</button>
+            </div>
+        `).join('');
+
+    // Add event listeners to delete buttons
+    mergeFiles.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            filesToMerge.splice(index, 1);
+            updateMergeFileList();
+        });
+    });
+
+    mergeBtn.classList.remove('hidden');
+    mergeStatus.textContent = `${filesToMerge.length} file(s) ready to merge`;
+    mergeStatus.className = 'status info';
+}
+
+mergeInput.addEventListener('change', (e) => {
+    const newFiles = Array.from(e.target.files);
+
+    if (newFiles.length > 0) {
+        // Append new files instead of replacing
+        filesToMerge.push(...newFiles);
+        updateMergeFileList();
+    }
+
+    // Reset input so same file can be added again if needed
+    mergeInput.value = '';
 });
 
 mergeBtn.addEventListener('click', async () => {
