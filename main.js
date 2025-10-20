@@ -176,14 +176,18 @@ function updateMergeFileList() {
         return;
     }
 
-    mergeFiles.innerHTML = '<h4>Files to merge:</h4>' +
-        filesToMerge.map((f, i) => `
-            <div class="file-item">
-                <span class="file-number">${i + 1}.</span>
-                <span class="file-name">${f.name}</span>
-                <button class="delete-btn" data-index="${i}" title="Remove file">×</button>
-            </div>
-        `).join('');
+    mergeFiles.innerHTML = `
+        <h4>Files to merge:</h4>
+        <div class="file-list-scrollable">
+            ${filesToMerge.map((f, i) => `
+                <div class="file-item">
+                    <span class="file-number">${i + 1}.</span>
+                    <span class="file-name">${f.name}</span>
+                    <button class="delete-btn" data-index="${i}" title="Remove file">×</button>
+                </div>
+            `).join('')}
+        </div>
+    `;
 
     // Add event listeners to delete buttons
     mergeFiles.querySelectorAll('.delete-btn').forEach(btn => {
