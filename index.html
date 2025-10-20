@@ -23,6 +23,7 @@
                 <div class="tool-body">
                     <input type="file" id="splitInput" accept=".pdf" class="file-input">
                     <label for="splitInput" class="file-label">Choose PDF to Split</label>
+                    <div id="splitPreview" class="pdf-preview hidden"></div>
                     <div id="splitOptions" class="options hidden">
                         <div class="input-group">
                             <label>Pages to extract (e.g., 1,3,5 or 1-5):</label>
@@ -73,12 +74,14 @@
                 <div class="tool-body">
                     <input type="file" id="infoInput" accept=".pdf" class="file-input">
                     <label for="infoInput" class="file-label">Choose PDF</label>
+                    <div id="infoPreview" class="pdf-preview hidden"></div>
                     <div id="pdfInfo" class="info-display"></div>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script type="module" src="main.js"></script>
 </body>
 </html>

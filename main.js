@@ -1,5 +1,8 @@
 import { PDFDocument, rgb } from 'pdf-lib';
 
+// Configure PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
 // Utility function to read file as ArrayBuffer
 async function readFileAsArrayBuffer(file) {
     return new Promise((resolve, reject) => {
@@ -8,6 +11,51 @@ async function readFileAsArrayBuffer(file) {
         reader.onerror = reject;
         reader.readAsArrayBuffer(file);
     });
+}
+
+// Utility function to render PDF preview
+async function renderPDFPreview(file, containerElement, maxPages = 3) {
+    try {
+        const arrayBuffer = await readFileAsArrayBuffer(file);
+        const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+        const pdf = await loadingTask.promise;
+
+        const numPages = pdf.numPages;
+        const pagesToRender = Math.min(numPages, maxPages);
+
+        containerElement.innerHTML = `<h4>Preview (showing ${pagesToRender} of ${numPages} page${numPages > 1 ? 's' : ''})</h4>`;
+
+        for (let pageNum = 1; pageNum <= pagesToRender; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const scale = 1.0;
+            const viewport = page.getViewport({ scale });
+
+            const canvas = document.createElement('canvas');
+            canvas.className = 'pdf-page-canvas';
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            const renderContext = {
+                canvasContext: context,
+                viewport: viewport
+            };
+
+            await page.render(renderContext).promise;
+
+            const pageWrapper = document.createElement('div');
+            pageWrapper.className = 'pdf-page-wrapper';
+            pageWrapper.innerHTML = `<div class="page-number">Page ${pageNum}</div>`;
+            pageWrapper.appendChild(canvas);
+            containerElement.appendChild(pageWrapper);
+        }
+
+        containerElement.classList.remove('hidden');
+    } catch (error) {
+        console.error('Error rendering PDF preview:', error);
+        containerElement.innerHTML = `<div class="status error">Could not generate preview</div>`;
+        containerElement.classList.remove('hidden');
+    }
 }
 
 // Utility function to download PDF
@@ -46,6 +94,7 @@ function parsePageRange(rangeStr, totalPages) {
 
 // ============ SPLIT PDF ============
 const splitInput = document.getElementById('splitInput');
+const splitPreview = document.getElementById('splitPreview');
 const splitOptions = document.getElementById('splitOptions');
 const splitBtn = document.getElementById('splitBtn');
 const splitStatus = document.getElementById('splitStatus');
@@ -60,6 +109,9 @@ splitInput.addEventListener('change', async (e) => {
     try {
         splitStatus.textContent = 'Loading PDF...';
         splitStatus.className = 'status info';
+
+        // Render preview
+        await renderPDFPreview(file, splitPreview);
 
         const arrayBuffer = await readFileAsArrayBuffer(file);
         splitPdfDoc = await PDFDocument.load(arrayBuffer);
@@ -226,6 +278,7 @@ convertBtn.addEventListener('click', async () => {
 
 // ============ PDF INFO ============
 const infoInput = document.getElementById('infoInput');
+const infoPreview = document.getElementById('infoPreview');
 const pdfInfo = document.getElementById('pdfInfo');
 
 infoInput.addEventListener('change', async (e) => {
@@ -234,6 +287,9 @@ infoInput.addEventListener('change', async (e) => {
 
     try {
         pdfInfo.innerHTML = '<div class="status info">Loading PDF information...</div>';
+
+        // Render preview
+        await renderPDFPreview(file, infoPreview);
 
         const arrayBuffer = await readFileAsArrayBuffer(file);
         const pdf = await PDFDocument.load(arrayBuffer);

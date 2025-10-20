@@ -296,6 +296,53 @@ header h1 {
     word-break: break-word;
 }
 
+/* PDF Preview Styles */
+.pdf-preview {
+    background: var(--bg-color);
+    border-radius: 8px;
+    padding: 1.25rem;
+    border: 1px solid var(--border-color);
+    margin-top: 1rem;
+}
+
+.pdf-preview h4 {
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.pdf-page-wrapper {
+    margin-bottom: 1rem;
+    background: white;
+    border-radius: 6px;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.pdf-page-wrapper:last-child {
+    margin-bottom: 0;
+}
+
+.page-number {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.pdf-page-canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 @media (max-width: 968px) {
     .tools-grid {
         grid-template-columns: 1fr;
@@ -327,5 +374,9 @@ header h1 {
     .info-item {
         grid-template-columns: 1fr;
         gap: 0.375rem;
+    }
+
+    .pdf-preview {
+        padding: 1rem;
     }
 }
