@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Handler - Split, Merge & Convert PDFs</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📄 PDF Handler</h1>
+            <p class="subtitle">Split, merge, and convert your PDF files with ease</p>
+        </header>
+
+        <div class="tools-grid">
+            <!-- Split PDF Tool -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <h2>✂️ Split PDF</h2>
+                    <p>Extract specific pages from a PDF</p>
+                </div>
+                <div class="tool-body">
+                    <input type="file" id="splitInput" accept=".pdf" class="file-input">
+                    <label for="splitInput" class="file-label">Choose PDF to Split</label>
+                    <div id="splitOptions" class="options hidden">
+                        <div class="input-group">
+                            <label>Pages to extract (e.g., 1,3,5 or 1-5):</label>
+                            <input type="text" id="pageRange" placeholder="1,2,3 or 1-5">
+                        </div>
+                        <button id="splitBtn" class="btn btn-primary">Split PDF</button>
+                    </div>
+                    <div id="splitStatus" class="status"></div>
+                </div>
+            </div>
+
+            <!-- Merge PDFs Tool -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <h2>🔗 Merge PDFs</h2>
+                    <p>Combine multiple PDF files into one</p>
+                </div>
+                <div class="tool-body">
+                    <input type="file" id="mergeInput" accept=".pdf" multiple class="file-input">
+                    <label for="mergeInput" class="file-label">Choose PDFs to Merge</label>
+                    <div id="mergeFiles" class="file-list"></div>
+                    <button id="mergeBtn" class="btn btn-primary hidden">Merge PDFs</button>
+                    <div id="mergeStatus" class="status"></div>
+                </div>
+            </div>
+
+            <!-- Convert to PDF Tool -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <h2>🖼️ Image to PDF</h2>
+                    <p>Convert images to PDF format</p>
+                </div>
+                <div class="tool-body">
+                    <input type="file" id="imageInput" accept="image/*" multiple class="file-input">
+                    <label for="imageInput" class="file-label">Choose Images</label>
+                    <div id="imageFiles" class="file-list"></div>
+                    <button id="convertBtn" class="btn btn-primary hidden">Convert to PDF</button>
+                    <div id="convertStatus" class="status"></div>
+                </div>
+            </div>
+
+            <!-- PDF Info Tool -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <h2>ℹ️ PDF Info</h2>
+                    <p>View PDF metadata and page count</p>
+                </div>
+                <div class="tool-body">
+                    <input type="file" id="infoInput" accept=".pdf" class="file-input">
+                    <label for="infoInput" class="file-label">Choose PDF</label>
+                    <div id="pdfInfo" class="info-display"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
