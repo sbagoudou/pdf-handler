@@ -13,43 +13,38 @@ async function readFileAsArrayBuffer(file) {
     });
 }
 
-// Utility function to render PDF preview
-async function renderPDFPreview(file, containerElement, maxPages = 3) {
+// Utility function to render PDF preview thumbnail
+async function renderPDFPreview(file, containerElement) {
     try {
         const arrayBuffer = await readFileAsArrayBuffer(file);
         const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
         const pdf = await loadingTask.promise;
 
         const numPages = pdf.numPages;
-        const pagesToRender = Math.min(numPages, maxPages);
+        const page = await pdf.getPage(1);
 
-        containerElement.innerHTML = `<h4>Preview (showing ${pagesToRender} of ${numPages} page${numPages > 1 ? 's' : ''})</h4>`;
+        // Calculate scale to fit within thumbnail width (200px max)
+        const viewport = page.getViewport({ scale: 1 });
+        const thumbnailWidth = 200;
+        const scale = thumbnailWidth / viewport.width;
+        const scaledViewport = page.getViewport({ scale });
 
-        for (let pageNum = 1; pageNum <= pagesToRender; pageNum++) {
-            const page = await pdf.getPage(pageNum);
-            const scale = 1.0;
-            const viewport = page.getViewport({ scale });
+        const canvas = document.createElement('canvas');
+        canvas.className = 'pdf-thumbnail';
+        const context = canvas.getContext('2d');
+        canvas.height = scaledViewport.height;
+        canvas.width = scaledViewport.width;
 
-            const canvas = document.createElement('canvas');
-            canvas.className = 'pdf-page-canvas';
-            const context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+        await page.render({
+            canvasContext: context,
+            viewport: scaledViewport
+        }).promise;
 
-            const renderContext = {
-                canvasContext: context,
-                viewport: viewport
-            };
-
-            await page.render(renderContext).promise;
-
-            const pageWrapper = document.createElement('div');
-            pageWrapper.className = 'pdf-page-wrapper';
-            pageWrapper.innerHTML = `<div class="page-number">Page ${pageNum}</div>`;
-            pageWrapper.appendChild(canvas);
-            containerElement.appendChild(pageWrapper);
-        }
-
+        containerElement.innerHTML = `
+            <div class="thumbnail-label">Preview - Page 1 of ${numPages}</div>
+            <div class="thumbnail-wrapper"></div>
+        `;
+        containerElement.querySelector('.thumbnail-wrapper').appendChild(canvas);
         containerElement.classList.remove('hidden');
     } catch (error) {
         console.error('Error rendering PDF preview:', error);
